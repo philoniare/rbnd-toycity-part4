@@ -4,8 +4,6 @@ require_relative 'data/schema'
 
 include Analyzable
 
-# Uncomment the following code once ALL your tests have passed!
-
 # db_create
 #
 # puts "-------------------"
