@@ -1,9 +1,9 @@
 require 'faker'
 
 def db_seed
-  # Use the faker gem to generate arrays with fake brands,
-  # product names, and prices.
-
-  # Create 10 new Product objects, and save them to the
-  # database
+  CSV.open(File.dirname(__FILE__) + "/../data/data.csv", "a") do |csv|
+    10.times do |i|
+      csv << [i, Faker::Company.name, Faker::Commerce.product_name, Faker::Commerce.price]
+    end
+  end
 end
