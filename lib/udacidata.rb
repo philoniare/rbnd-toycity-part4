@@ -19,7 +19,9 @@ class Udacidata
   end
   def self.create(opts = {})
     product = Product.new(opts)
-    if self.find(product.id) == nil
+    begin
+      self.find(product.id)
+    rescue ProductNotFoundError
       CSV.open(@@data_path, "a") do |csv|
         csv << [product.id, product.brand, product.name, product.price]
       end
@@ -56,16 +58,22 @@ class Udacidata
   def self.destroy(id)
     data = CSV.read(@@data_path)
     row_destroyed = []
+    found = false
     CSV.open(@@data_path, "w") do |csv|
       data.each do |row|
         if row[0] != id.to_s
           csv << row
         else
           row_destroyed = row
+          found = true
         end
       end
     end
-    Product.new(id: row_destroyed[0], brand: row_destroyed[1], name: row_destroyed[2], price: row_destroyed[3])
+    if found
+      Product.new(id: row_destroyed[0], brand: row_destroyed[1], name: row_destroyed[2], price: row_destroyed[3])
+    else
+      raise ProductNotFoundError, "#{id} Not Found in the Database"
+    end
   end
 
   def update(opts = {})
@@ -83,6 +91,7 @@ class Udacidata
         return Product.new(id: product_row[0], brand: product_row[1], name: product_row[2], price: product_row[3])
       end
     end
+    raise ProductNotFoundError, "#{id} Not Found in the Database"
     return nil
   end
 
