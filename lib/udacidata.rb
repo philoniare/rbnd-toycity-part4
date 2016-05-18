@@ -108,8 +108,14 @@ class Udacidata
     products = self.all
     found_products = []
     products.each do |product|
-      if product.brand == opts[:brand]
-        found_products << product
+      if opts.has_key? :brand
+        if product.brand == opts[:brand]
+          found_products << product
+        end
+      else
+        if product.name == opts[:name]
+          found_products << product
+        end
       end
     end
     found_products

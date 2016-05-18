@@ -1,26 +1,43 @@
 module Analyzable
   def count_by_brand(products)
-    # return hash with inventory counts, organized by brand
+    counts = Hash.new
+    products.each do |product|
+      if counts.has_key? product.brand
+        counts[product.brand] += 1
+      else
+        counts[product.brand] = 1
+      end
+    end
+    counts
   end
   def count_by_name(products)
-    # return hash with inventory counts, organized by name
+    counts = Hash.new
+    products.each do |product|
+      if counts.has_key? product.name
+        counts[product.name] += 1
+      else
+        counts[product.name] = 1
+      end
+    end
+    counts
   end
   def average_price(products)
-    # return avg. price
+    total_price = 0
+    products.each do |product|
+      total_price += product.price.to_f
+    end
+    (total_price / products.length).round(2)
   end
   def print_report(products)
-    # return summary report: avg. price, counts by brand, product name. Sample:
-    #=> Average Price: $51.6
-    # Inventory by Brand:
-    #   - Hasbro: 5
-    #   - Fisher-Price: 1
-    #   - Crayola: 2
-    #   - Lego: 2
-    # Inventory by Name:
-    #   - Incredible Copper Bag: 3
-    #   - Synergistic Rubber Car: 2
-    #   - Aerodynamic Marble Computer: 3
-    #   - Synergistic Wooden Chair: 2
-
+    report = "Average Price: #{average_price(products)}\n"
+    report += "Inventory by Brand: \n"
+    count_by_brand(products).each do |brand, count|
+      report += "   - #{brand}: #{count}\n"
+    end
+    report += "Inventory by Name: \n"
+    count_by_name(products).each do |brand, count|
+      report += "   - #{brand}: #{count}\n"
+    end
+    report
   end
 end
