@@ -52,25 +52,66 @@ class Udacidata
     end
     n == 1 ? last_products.first : last_products
   end
-  
-  def self.destroy(id)
-    # Delete the object with id and return that object
-    # raise error if not in db
-  end
-  def self.update
 
+  def self.destroy(id)
+    data = CSV.read(@@data_path)
+    row_destroyed = []
+    CSV.open(@@data_path, "w") do |csv|
+      data.each do |row|
+        if row[0] != id.to_s
+          csv << row
+        else
+          row_destroyed = row
+        end
+      end
+    end
+    Product.new(id: row_destroyed[0], brand: row_destroyed[1], name: row_destroyed[2], price: row_destroyed[3])
+  end
+
+  def update(opts = {})
+    @brand = opts[:brand] if opts.has_key? :brand
+    @price = opts[:price] if opts.has_key? :price
+    self.class.destroy(self.id)
+    self.class.create(id: self.id, brand: self.brand, name: self.name, price: self.price)
+    return self
   end
 
   def self.find(id)
     data = CSV.read(@@data_path).drop(1)
-    product = []
     data.each do |product_row|
-      if product_row[0] == id
-        puts "#{product_row[0]} ------ #{id}"
-        product << Product.new(id: product_row[0], brand: product_row[1], name: product_row[2], price: product_row[3])
+      if product_row[0].to_i == id
+        return Product.new(id: product_row[0], brand: product_row[1], name: product_row[2], price: product_row[3])
       end
     end
-    product.first
+    return nil
   end
 
+  def self.find_by_brand(brand)
+    products = self.all
+    products.each do |product|
+      if product.brand == brand
+        return product
+      end
+    end
+  end
+
+  def self.find_by_name(name)
+    products = self.all
+    products.each do |product|
+      if product.name == name
+        return product
+      end
+    end
+  end
+
+  def self.where(opts = {})
+    products = self.all
+    found_products = []
+    products.each do |product|
+      if product.brand == opts[:brand]
+        found_products << product
+      end
+    end
+    found_products
+  end
 end
